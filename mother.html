@@ -27,24 +27,23 @@
         min-height: 2em;
         margin-bottom: 20px;
       }
-      .show {
-        opacity: 1;
-      }
       audio {
-        margin-top: 20px;
+        margin-bottom: 20px;
         width: 90%;
         max-width: 320px;
       }
-      #fallbackPlay {
-        display: none;
+      .translation {
+        font-size: 1.1em;
+        opacity: 0;
+        transition: opacity 1s ease-in-out;
+        text-align: center;
+        color: #ccc;
+        max-width: 90%;
+        min-height: 1.5em;
         margin-top: 20px;
-        padding: 10px 20px;
-        font-size: 1em;
-        background-color: #444;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
+      }
+      .show {
+        opacity: 1;
       }
     </style>
   </head>
@@ -54,26 +53,45 @@
       <source src="mother.mp3" type="audio/mpeg" />
       Your browser does not support the audio element.
     </audio>
+    <div id="translation" class="translation"></div>
 
     <script>
       const captions = [
-        { time: 0, text: "Doesn't matter what kind of mother you are." },
-        { time: 3, text: "Teenage girls rebel." },
-        { time: 4, text: "I did it to mine. You did it to me." },
-        { time: 7, text: "Yours is doing it to you." },
+        {
+          time: 0,
+          en: "Doesn't matter what kind of mother you are.",
+          kr: "어떤 엄마든 상관없어.",
+        },
+        {
+          time: 3,
+          en: "Teenage girls rebel.",
+          kr: "십대 딸들은 다 반항하니까.",
+        },
+        {
+          time: 4,
+          en: "I did it to mine. You did it to me.",
+          kr: "나도 내 엄마한테 그랬고, 너도 나한테 그랬고,",
+        },
+        {
+          time: 7,
+          en: "Yours is doing it to you.",
+          kr: "지금은 네 딸이 너한테 그러고 있는 거야.",
+        },
         {
           time: 9,
-          text: "All you can hope for is that you raised them well enough",
+          en: "All you can hope for is that you raised them well enough",
+          kr: "그저 바랄 수 있는 건, 그 아이들이 스스로 잘 살아갈 수 있을 만큼 우리가 잘 키워냈다는 거야.",
         },
         {
           time: 12,
-          text: "that they can take care of themselves and that one day, they'll come back.",
+          en: "that they can take care of themselves and that one day, they'll come back.",
+          kr: "그리고 언젠가, 그 아이들이 다시 돌아올 거라는 거지.",
         },
       ];
 
       const audio = document.getElementById("audio");
       const caption = document.getElementById("caption");
-      const fallbackPlay = document.getElementById("fallbackPlay");
+      const translation = document.getElementById("translation");
       let current = -1;
 
       function showCaptions() {
@@ -83,10 +101,13 @@
             if (time >= captions[i].time) {
               if (current !== i) {
                 current = i;
-                caption.textContent = captions[i].text;
+                caption.textContent = captions[i].en;
+                translation.textContent = captions[i].kr;
                 caption.classList.remove("show");
-                void caption.offsetWidth;
+                translation.classList.remove("show");
+                void caption.offsetWidth; // trigger reflow
                 caption.classList.add("show");
+                translation.classList.add("show");
               }
               break;
             }
@@ -96,21 +117,6 @@
 
       window.addEventListener("load", () => {
         showCaptions();
-        const playPromise = audio.play();
-        if (playPromise !== undefined) {
-          playPromise
-            .then(() => {
-              // Audio autoplay success
-            })
-            .catch(() => {
-              fallbackPlay.style.display = "inline-block";
-            });
-        }
-      });
-
-      fallbackPlay.addEventListener("click", () => {
-        audio.play();
-        fallbackPlay.style.display = "none";
       });
     </script>
   </body>
