@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mother Quote Player</title>
+    <style>
+      body {
+        background-color: #111;
+        color: #fff;
+        font-family: "Segoe UI", sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        margin: 0;
+        padding: 20px;
+        box-sizing: border-box;
+      }
+      .caption {
+        font-size: 1.6em;
+        opacity: 0;
+        transition: opacity 1s ease-in-out;
+        text-align: center;
+        max-width: 90%;
+        min-height: 2em;
+        margin-bottom: 20px;
+      }
+      .show {
+        opacity: 1;
+      }
+      audio {
+        margin-top: 20px;
+        width: 90%;
+        max-width: 320px;
+      }
+      #fallbackPlay {
+        display: none;
+        margin-top: 20px;
+        padding: 10px 20px;
+        font-size: 1em;
+        background-color: #444;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="caption" class="caption">Loading...</div>
+    <audio id="audio" controls>
+      <source src="mother.mp3" type="audio/mpeg" />
+      Your browser does not support the audio element.
+    </audio>
+
+    <script>
+      const captions = [
+        { time: 0, text: "Doesn't matter what kind of mother you are." },
+        { time: 3, text: "Teenage girls rebel." },
+        { time: 4, text: "I did it to mine. You did it to me." },
+        { time: 7, text: "Yours is doing it to you." },
+        {
+          time: 9,
+          text: "All you can hope for is that you raised them well enough",
+        },
+        {
+          time: 12,
+          text: "that they can take care of themselves and that one day, they'll come back.",
+        },
+      ];
+
+      const audio = document.getElementById("audio");
+      const caption = document.getElementById("caption");
+      const fallbackPlay = document.getElementById("fallbackPlay");
+      let current = -1;
+
+      function showCaptions() {
+        audio.ontimeupdate = function () {
+          const time = audio.currentTime;
+          for (let i = captions.length - 1; i >= 0; i--) {
+            if (time >= captions[i].time) {
+              if (current !== i) {
+                current = i;
+                caption.textContent = captions[i].text;
+                caption.classList.remove("show");
+                void caption.offsetWidth;
+                caption.classList.add("show");
+              }
+              break;
+            }
+          }
+        };
+      }
+
+      window.addEventListener("load", () => {
+        showCaptions();
+        const playPromise = audio.play();
+        if (playPromise !== undefined) {
+          playPromise
+            .then(() => {
+              // Audio autoplay success
+            })
+            .catch(() => {
+              fallbackPlay.style.display = "inline-block";
+            });
+        }
+      });
+
+      fallbackPlay.addEventListener("click", () => {
+        audio.play();
+        fallbackPlay.style.display = "none";
+      });
+    </script>
+  </body>
+</html>
